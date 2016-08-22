@@ -1,0 +1,20 @@
+{
+  "manifest_version" : 2,
+
+  "name" : "Tab Rotation",
+  "description" : "Rotate between browser tabs",
+  "version" : "0.1",
+
+  "browser_action" : {
+    "default_icon" : {
+      "19" : "assets/images/AS-rondo-icon-19.png",
+      "38" : "assets/images/AS-rondo-icon-38.png"
+    },
+    "default_title" : "Rotate !"
+  },
+
+  "permissions" : [
+    "activeTab",
+    "https://www.googleapis.com/"
+  ]
+}
