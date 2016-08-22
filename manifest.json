@@ -13,6 +13,11 @@
     "default_title" : "Rotate !"
   },
 
+  "background" : {
+    "scripts" : ["js/main.js"],
+    "persistent" : false
+  },
+
   "permissions" : [
     "activeTab",
     "https://www.googleapis.com/"
