@@ -1,18 +1,38 @@
 // Main entry point for my chrome extension
 
-// These values are transient and only live as long as my page is active.
-// Hence, should store this type of data in some form of storage.
-var toggleValue = false;
-var toggleCount = 0;
+function initState() {
+    var initialState = {
+        toggleValue : false,
+        toggleCount : 0
+    };
 
-function toggleRotation(tab) {
-    if (toggleValue) {
-        window.alert("Disabling toggle (count="+toggleCount+")");
-    } else {
-        window.alert("Enabling toggle (count="+toggleCount+")");
-    }
-    toggleValue = !toggleValue;
-    toggleCount++;
+    save(initialState);
 }
 
+function save(state) {
+    localStorage.state = JSON.stringify(state);
+}
+
+function load() {
+    console.log("Loading state...");
+    return JSON.parse(localStorage.state);
+}
+
+function toggleRotation(tab) {
+    console.log("toggleRotation...");
+    var state = load();
+
+    console.log("Inside my callback...");
+    if (state.toggleValue) {
+        window.alert("Disabling toggle (count="+state.toggleCount+")");
+    } else {
+        window.alert("Enabling toggle (count="+state.toggleCount+")");
+    }
+    state.toggleValue = !state.toggleValue;
+    state.toggleCount++;
+
+    save(state);
+}
+
+chrome.runtime.onInstalled.addListener(initState);
 chrome.browserAction.onClicked.addListener(toggleRotation);
