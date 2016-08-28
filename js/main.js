@@ -1,9 +1,24 @@
 // Main entry point for my chrome extension
+var config = {
+  timeToNextTab : 3000  // [ms]
+};
+
+var pauseIcon = {
+    "19" : "assets/images/RotatePaused-19.png",
+    "38" : "assets/images/RotatePaused-38.png"
+};
+
+var playIcon = {
+    "19" : "assets/images/RotateActive-19.png",
+    "38" : "assets/images/RotateActive-38.png"
+};
+
+
+
 
 function initState() {
     var initialState = {
-        rotationActive: false,
-        toggleCount: 0
+        rotationActive: false
     };
 
     save(initialState);
@@ -57,22 +72,22 @@ function schedule() {
     // The alarms API will not schedule faster than 1 minute
     // This might be an issue in combination with en Event page. Perhaps
     // I will need to switch to a persistent background page again for this.
-    window.setTimeout(onSchedule, 3000);
+    window.setTimeout(onSchedule, config.timeToNextTab);
 }
 
 function toggleRotation(tab) {
     console.log("toggleRotation...");
     var state = load();
 
-    console.log("Inside my callback...");
     if (state.rotationActive) {
-        window.alert("Disabling toggle (count=" + state.toggleCount + ")");
+        // window.alert("Stop rotation");
+        chrome.browserAction.setIcon({path : pauseIcon});
     } else {
-        window.alert("Enabling toggle (count=" + state.toggleCount + ")");
+        // window.alert("Start rotation");
+        chrome.browserAction.setIcon({path : playIcon});
         schedule();
     }
     state.rotationActive = !state.rotationActive;
-    state.toggleCount++;
 
     save(state);
 }

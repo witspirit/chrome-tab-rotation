@@ -7,8 +7,8 @@
 
   "browser_action" : {
     "default_icon" : {
-      "19" : "assets/images/AS-rondo-icon-19.png",
-      "38" : "assets/images/AS-rondo-icon-38.png"
+      "19" : "assets/images/RotatePaused-19.png",
+      "38" : "assets/images/RotatePaused-38.png"
     },
     "default_title" : "Rotate !"
   },
