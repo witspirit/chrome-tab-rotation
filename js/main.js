@@ -1,8 +1,7 @@
 // Main entry point for my chrome extension
 var config = {
   timeToNextTab : 3000,  // [ms]
-  // timeToNextReload : 60 * 60 * 1000 // [ms] Every Hour = 60 minutes = 60 * 60 seconds = 60 * 60 * 1000 ms
-  timeToNextReload : 5000
+  timeToNextReload : 60 * 60 * 1000 // [ms] Every Hour = 60 minutes = 60 * 60 seconds = 60 * 60 * 1000 ms
 };
 
 var pauseIcon = {
@@ -19,7 +18,7 @@ var playIcon = {
 function initState() {
     var initialState = {
         rotationActive: false,
-        lastReloadTime: 0
+        lastReloadTime: {} // Dictionary, indexed by tab.index. Tab.index is chosen because it limits the growth over time. Has the drawback that indexes could shift when tabs are added/removed and hence that some of the reload timestamps are shifted, but this seems less an issue for this use-case.
     };
 
     save(initialState);
@@ -37,13 +36,16 @@ function load() {
 function handleReloadFor(tab) {
     var currentReloadTime = Date.now();
     var state = load();
-    var lastReloadTime = state.lastReloadTime;
+    var lastReloadTime = state.lastReloadTime[tab.index];
+    if (lastReloadTime === undefined) { // Could be first time we see this index
+        lastReloadTime = 0;
+    }
 
     console.log("currentTime = "+currentReloadTime+"; lastReloadTime = "+lastReloadTime);
 
     var performReload = false;
     if (currentReloadTime - lastReloadTime > config.timeToNextReload) {
-        state.lastReloadTime = currentReloadTime;
+        state.lastReloadTime[tab.index] = currentReloadTime;
         save(state);
         performReload = true;
     }
