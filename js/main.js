@@ -33,6 +33,12 @@ function load() {
     return JSON.parse(localStorage.state);
 }
 
+function handleReloadFor(tab) {
+    return function(window) {
+        chrome.tabs.reload(tab.id);
+    }
+}
+
 function moveToNextTab() {
     chrome.tabs.query({currentWindow: true}, function(tabArray) {
         var nextTabIndex = -1;
@@ -48,8 +54,9 @@ function moveToNextTab() {
         }
 
         if (nextTabIndex !== -1) {
+            var nextTab = tabArray[nextTabIndex];
             console.log("Highlighting tab at "+nextTabIndex);
-            chrome.tabs.highlight({ tabs : [ nextTabIndex ] });
+            chrome.tabs.highlight({ tabs : [ nextTabIndex ] }, handleReloadFor(nextTab));
         } else {
             console.log("Could not determine next tab");
         }
