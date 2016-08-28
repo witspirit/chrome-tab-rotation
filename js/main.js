@@ -1,6 +1,8 @@
 // Main entry point for my chrome extension
 var config = {
-  timeToNextTab : 3000  // [ms]
+  timeToNextTab : 3000,  // [ms]
+  // timeToNextReload : 60 * 60 * 1000 // [ms] Every Hour = 60 minutes = 60 * 60 seconds = 60 * 60 * 1000 ms
+  timeToNextReload : 5000
 };
 
 var pauseIcon = {
@@ -14,11 +16,10 @@ var playIcon = {
 };
 
 
-
-
 function initState() {
     var initialState = {
-        rotationActive: false
+        rotationActive: false,
+        lastReloadTime: 0
     };
 
     save(initialState);
@@ -34,8 +35,25 @@ function load() {
 }
 
 function handleReloadFor(tab) {
+    var currentReloadTime = Date.now();
+    var state = load();
+    var lastReloadTime = state.lastReloadTime;
+
+    console.log("currentTime = "+currentReloadTime+"; lastReloadTime = "+lastReloadTime);
+
+    var performReload = false;
+    if (currentReloadTime - lastReloadTime > config.timeToNextReload) {
+        state.lastReloadTime = currentReloadTime;
+        save(state);
+        performReload = true;
+    }
+
+    console.log("performReload = "+performReload);
+
     return function(window) {
-        chrome.tabs.reload(tab.id);
+        if (performReload) {
+            chrome.tabs.reload(tab.id);
+        }
     }
 }
 
