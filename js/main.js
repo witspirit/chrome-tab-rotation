@@ -44,7 +44,9 @@ function handleReloadFor(tab) {
     console.log("currentTime = "+currentReloadTime+"; lastReloadTime = "+lastReloadTime);
 
     var performReload = false;
-    if (currentReloadTime - lastReloadTime > config.timeToNextReload) {
+    if (!tab.url.startsWith("chrome://extensions") // Exclude extension page, since it will trigger reload of the extension !
+        &&
+        currentReloadTime - lastReloadTime > config.timeToNextReload) {
         state.lastReloadTime[tab.index] = currentReloadTime;
         save(state);
         performReload = true;
