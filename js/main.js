@@ -1,7 +1,8 @@
 // Main entry point for my chrome extension
 var config = {
   timeToNextTab : 3000,  // [ms]
-  timeToNextReload : 60 * 60 * 1000 // [ms] Every Hour = 60 minutes = 60 * 60 seconds = 60 * 60 * 1000 ms
+  timeToNextReload : 60 * 60 * 1000, // [ms] Every Hour = 60 minutes = 60 * 60 seconds = 60 * 60 * 1000 ms
+  excludes : ["chrome://extensions", "https://www.youtube.com"]
 };
 
 var pauseIcon = {
@@ -41,12 +42,8 @@ function handleReloadFor(tab) {
         lastReloadTime = 0;
     }
 
-    console.log("currentTime = "+currentReloadTime+"; lastReloadTime = "+lastReloadTime);
-
     var performReload = false;
-    if (!tab.url.startsWith("chrome://extensions") // Exclude extension page, since it will trigger reload of the extension !
-        &&
-        currentReloadTime - lastReloadTime > config.timeToNextReload) {
+    if (!isExcluded(tab.url) && isTimeToReload(currentReloadTime, lastReloadTime)) {
         state.lastReloadTime[tab.index] = currentReloadTime;
         save(state);
         performReload = true;
@@ -60,6 +57,21 @@ function handleReloadFor(tab) {
         }
     }
 }
+
+function isExcluded(url) {
+    for (var i = 0; i < config.excludes.length; i++) {
+        if (url.startsWith(config.excludes[i])) {
+            return true;
+        }
+    }
+    return false;
+}
+
+function isTimeToReload(currentTime, lastReloadTime) {
+    console.log("currentTime = "+currentTime+"; lastReloadTime = "+lastReloadTime);
+    return currentTime - lastReloadTime > config.timeToNextReload
+}
+
 
 function moveToNextTab() {
     chrome.tabs.query({currentWindow: true}, function(tabArray) {
